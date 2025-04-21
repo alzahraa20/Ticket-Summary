@@ -1,0 +1,43 @@
+services:
+  ticket-summary:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    environment:
+      - LLM_PROVIDER="ollama"
+    networks:
+      - app-network
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - app-network
+    # runtime: nvidia  # Add explicit runtime
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all  # Use all available GPUs
+              capabilities: [gpu, compute, utility]  # Add all capabilities
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - CUDA_VISIBLE_DEVICES=0
+      - NVIDIA_REQUIRE_CUDA=cuda>=11.8
+      - NVIDIA_DISABLE_REQUIRE=true
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  ollama_data:

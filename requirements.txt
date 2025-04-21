@@ -1,0 +1,8 @@
+streamlit
+pandas
+plotly
+openai
+python-dotenv
+requests
+streamlit-timeline==0.0.2
+db-sqlite3
